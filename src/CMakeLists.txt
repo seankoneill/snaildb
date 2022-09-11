@@ -16,7 +16,7 @@ FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
   GIT_TAG        v3.0.1 # or a later release
-)
+  )
 
 FetchContent_MakeAvailable(Catch2)
 
@@ -37,3 +37,11 @@ add_executable(snail-test "test/test.cc")
 target_include_directories(snail-test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm_tree/" "${CMAKE_CURRENT_SOURCE_DIR}/libs/util")
 target_link_libraries(snail-test PRIVATE core lsm_tree Catch2::Catch2WithMain)
 target_compile_options(snail-test PRIVATE -g)
+
+#Auto run tests. Taken from: https://stackoverflow.com/a/32902353
+add_custom_command(
+  TARGET snail-test
+  COMMENT "Run tests"
+  POST_BUILD
+  COMMAND snail-test
+  )
