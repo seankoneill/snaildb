@@ -12,7 +12,8 @@ int main() {
   f.open("testDB.db");
   f.close();
 
-  snaildb::LsmTree engine("testDB");
+  snaildb::LsmTree engine;
+  engine.open("testDB");
 
   engine.put("sean", "omegalul");
   //engine.put("user1", "{name john, age 69}");

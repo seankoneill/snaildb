@@ -4,7 +4,7 @@
 
 namespace snaildb {
 
-  LsmTree::LsmTree(std::string name) : dbName(name) {
+  bool LsmTree::open(std::string name) {
     std::stringstream ss;
 
     ss << dbName << ".db";
@@ -14,10 +14,12 @@ namespace snaildb {
 
     ss << dbName << ".wlog";
     wal_.open(ss.str());
+    return true;
   }
 
-  LsmTree::~LsmTree() {
+  bool LsmTree::close() {
     wal_.close();
+    return true;
   }
 
   std::optional<std::string> LsmTree::get(std::string key) {

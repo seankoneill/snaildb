@@ -15,8 +15,8 @@ namespace snaildb {
   class LsmTree {
 
     public:
-      ~LsmTree();
-      LsmTree(std::string);
+      bool open(std::string);
+      bool close();
 
       std::optional<std::string> get(std::string);
       bool put(std::string, std::string);

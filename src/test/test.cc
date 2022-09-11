@@ -4,7 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "libs/core/db.h"
+#include "../libs/core/db.h"
 
 //Taken from stack overflow: https://stackoverflow.com/a/440240
 std::string gen_random(const int len) {
@@ -28,7 +28,8 @@ TEST_CASE("Random string test against std::map") {
   f.open("testDB.db");
   f.close();
 
-  snaildb::LsmTree engine("testDB");
+  snaildb::LsmTree engine;
+  engine.open("testDB.db");
 
   std::map<std::string, std::string> testMap;
   std::vector<std::string> testKeys;
@@ -46,6 +47,32 @@ TEST_CASE("Random string test against std::map") {
   }
 }
 
-TEST_CASE("Open existing database") {}
+TEST_CASE("Open existing database") {
+  //clear file before test
+  std::ofstream f;
+  f.open("testDB.db");
+  f.close();
+
+  snaildb::LsmTree engine;
+  engine.open("testDB.db");
+
+  std::map<std::string, std::string> testMap;
+  std::vector<std::string> testKeys;
+  std::vector<std::string> testVals;
+  for (int i = 0; i < 10000; ++i) {
+    testKeys.push_back(gen_random(20));
+    testVals.push_back(gen_random(100));
+
+    engine.put(testKeys[i],testVals[i]);
+    testMap[testKeys[i]] = testVals[i];
+  }
+
+  engine.close();
+  engine.open("testDB.db");
+
+  for (auto e: testKeys) {
+    REQUIRE(engine.get(e).value() == testMap[e]);
+  }
+}
 TEST_CASE("Recover database from log after crash") {}
 TEST_CASE("Test integrity after compaction") {}

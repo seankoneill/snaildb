@@ -122,5 +122,4 @@ namespace snaildb {
 
     return {key,value};
   }
-
 }
