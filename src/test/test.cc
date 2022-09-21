@@ -12,11 +12,12 @@ std::string gen_random(const int len) {
     "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
+  size_t s = sizeof(alphanum);
   std::string tmp_s;
   tmp_s.reserve(len);
 
   for (int i = 0; i < len; ++i) {
-    tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+    tmp_s += alphanum[rand() % (s - 1)];
   }
 
   return tmp_s;
@@ -70,7 +71,7 @@ TEST_CASE("Open existing database") {
   engine.close();
   engine.open("testDB.db");
 
-  for (auto e: testKeys) {
+  for (auto& e: testKeys) {
     REQUIRE(engine.get(e).value() == testMap[e]);
   }
 }

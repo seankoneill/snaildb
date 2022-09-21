@@ -26,14 +26,14 @@ namespace snaildb {
   }
 
   bool SST::compact() {
-    for (auto s: segments_) {
+    for (auto& s: segments_) {
     }
     return true;
   }
 
   std::optional<std::string> SST::get(std::string key) {
     spdlog::debug("searching {} segments_ for: {}",segments_.size(),key);
-    for(auto e = segments_.rbegin(); e != segments_.rend(); ++e) {
+    for(auto&& e = segments_.rbegin(); e != segments_.rend(); ++e) {
       int i = 1;
       std::optional<std::string> val = (*e)->get(key);
       if (val.has_value()) {
@@ -42,6 +42,6 @@ namespace snaildb {
       }
       ++i;
     }
-    return {"sst get not found"};
+    return {"sst get: not found"};
   }
 }
