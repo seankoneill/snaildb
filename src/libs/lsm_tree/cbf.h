@@ -10,25 +10,25 @@
 
 namespace snaildb {
 
-  template <typename CountType>
-  class CountingBloomFilter {
-    unsigned int rows_;
-    unsigned int columns_;
-    unsigned char seed;
-    std::vector<
-      std::function<unsigned int(const void *, size_t)>> hash_functions_;
+template <typename CountType>
+class CountingBloomFilter {
+  unsigned int rows_;
+  unsigned int columns_;
+  unsigned char seed;
+  std::vector<
+  std::function<unsigned int(const void *, size_t)>> hash_functions_;
 
-    CountType* array;
+  CountType* array;
 
-    public:
-      CountingBloomFilter(unsigned int rows, unsigned int columns);
-      ~CountingBloomFilter();
-      void add(const void * data, size_t len);
-      bool remove(const void * data, size_t len);
-      bool contains(const void * data, size_t len);
-      void display(std::ostream&);
+public:
+  CountingBloomFilter(unsigned int rows, unsigned int columns);
+  ~CountingBloomFilter();
+  void add(const void * data, size_t len);
+  bool remove(const void * data, size_t len);
+  bool contains(const void * data, size_t len);
+  void display(std::ostream&);
 
-  };
+};
 
 } //namespace snaildb
 

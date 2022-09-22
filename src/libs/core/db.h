@@ -10,16 +10,16 @@
 
 namespace snaildb {
 
-  class DB {
-    public:
-      std::optional<std::string> get(std::string key);
-      bool put(std::string key, std::string value);
-      bool remove(std::string key);
+class DB {
+public:
+  std::optional<std::string> get(std::string key);
+  bool put(std::string key, std::string value);
+  bool remove(std::string key);
 
-    private:
-      LsmTree storage_engine_;
-      
-  };
+private:
+  LsmTree storage_engine_;
+
+};
 
 }; //namespace snaildb
 
