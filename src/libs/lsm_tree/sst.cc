@@ -22,8 +22,8 @@ bool SST::open(std::string dbName) {
 
 bool SST::write(std::map<std::string, std::string> mem_table) {
   Segment* s = new Segment(table_file_);
-  segments_.push_back(s);
   s->write(mem_table);
+  segments_.push_back(s);
   return true;
 }
 

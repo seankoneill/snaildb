@@ -7,6 +7,7 @@
 - Add tests
 - Read in DB from file
 - Recover DB from log
+- Decide on error handling routines
 
 #### Later:
 - Doxygen
