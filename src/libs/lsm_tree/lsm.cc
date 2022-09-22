@@ -22,10 +22,10 @@ bool LsmTree::close() {
   return true;
 }
 
-std::optional<std::string> LsmTree::get(std::string key) {
+std::optional<std::string> LsmTree::get(std::string key) const {
   //if key is in current memtable, retrieve it
   if (mem_table_.count(key))
-    return mem_table_[key];
+    return mem_table_.at(key);
 
   //else get from on-disk SST
   return sst_.get(key);

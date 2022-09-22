@@ -33,7 +33,7 @@ bool SST::compact() {
   return true;
 }
 
-std::optional<std::string> SST::get(std::string key) {
+std::optional<std::string> SST::get(std::string key) const {
   spdlog::debug("searching {} segments_ for: {}",segments_.size(),key);
   for(auto&& e = segments_.rbegin(); e != segments_.rend(); ++e) {
     int i = 1;

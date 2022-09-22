@@ -7,13 +7,9 @@
 namespace snaildb {
 
 Segment::Segment(std::fstream& tf) : 
-  table_file_(tf),
-  filter_(new CountingBloomFilter<uint16_t>(100,100)) 
-{}
+  table_file_(tf) {}
 
-Segment::~Segment() {
-  delete filter_;
-}
+Segment::~Segment() {}
 
 //write a whole table to a new segment
 bool Segment::write(std::map<std::string,std::string> mem_table) {
@@ -48,7 +44,7 @@ bool Segment::write(std::map<std::string,std::string> mem_table) {
 
     bytes_written += 2 + e.first.size() + e.second.size();
 
-    filter_->add(e.first.c_str(),e.first.size());
+    filter_.add(e.first.c_str(),e.first.size());
 
     if (bytes_written > INDEX_THRESHHOLD_) {
       bytes_written = 0;
@@ -59,7 +55,7 @@ bool Segment::write(std::map<std::string,std::string> mem_table) {
 }
 
 std::optional<std::string> Segment::get(std::string key) {
-  if (!filter_->contains(key.c_str(),key.size())) {
+  if (!filter_.contains(key.c_str(),key.size())) {
     return {};
   }
 

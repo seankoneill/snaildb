@@ -26,28 +26,24 @@ std::string gen_random(const int len) {
 TEST_CASE("Correct returns on fresh database") {
   std::string dbName = "freshDBTest.db";
   snaildb::LsmTree engine;
-  SECTION("Init new db") {
-    std::ofstream f;
-    f.open(dbName);
-    f.close();
+  std::ofstream f;
+  f.open(dbName);
+  f.close();
 
-    engine.open(dbName);
-  }
+  engine.open(dbName);
 
   std::map<std::string, std::string> testMap;
   std::vector<std::string> testKeys;
   std::vector<std::string> testVals;
-  SECTION("Adding random pairs") {
-    for (int i = 0; i < 10000; ++i) {
-      testKeys.push_back(gen_random(rand()));
-      testVals.push_back(gen_random(rand()));
+  for (int i = 0; i < 1000; ++i) {
+    testKeys.push_back(gen_random(rand() % 20));
+    testVals.push_back(gen_random(rand() % 100));
 
-      engine.put(testKeys[i],testVals[i]);
-      testMap[testKeys[i]] = testVals[i];
-    }
+    engine.put(testKeys[i],testVals[i]);
+    testMap[testKeys[i]] = testVals[i];
   }
 
-  for (auto e: testKeys) {
+  for (auto& e: testKeys) {
     REQUIRE(engine.get(e).value() == testMap[e]);
   }
 }
@@ -58,25 +54,27 @@ TEST_CASE("Correct returns on existing database") {
   f.open("testDB.db");
   f.close();
 
-  snaildb::LsmTree engine;
-  engine.open("testDB.db");
+  snaildb::LsmTree* engine = new snaildb::LsmTree;
+  engine->open("testDB.db");
 
   std::map<std::string, std::string> testMap;
   std::vector<std::string> testKeys;
   std::vector<std::string> testVals;
-  for (int i = 0; i < 10000; ++i) {
-    testKeys.push_back(gen_random(20));
-    testVals.push_back(gen_random(100));
+  for (int i = 0; i < 1000; ++i) {
+    testKeys.push_back(gen_random(rand() % 20));
+    testVals.push_back(gen_random(rand() % 100));
 
-    engine.put(testKeys[i],testVals[i]);
+    engine->put(testKeys[i],testVals[i]);
     testMap[testKeys[i]] = testVals[i];
   }
 
-  engine.close();
-  engine.open("testDB.db");
+  delete engine;
+
+  engine = new snaildb::LsmTree;
+  engine->open("testDB.db");
 
   for (auto& e: testKeys) {
-    REQUIRE(engine.get(e).value() == testMap[e]);
+    REQUIRE(engine->get(e).value() == testMap[e]);
   }
 }
 

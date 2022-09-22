@@ -6,11 +6,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-if(NOT TARGET spdlog)
-  find_package(spdlog REQUIRED)
-endif()
+include(FetchContent)
 
-Include(FetchContent)
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG        v1.x
+  )
 
 FetchContent_Declare(
   Catch2
@@ -18,13 +20,13 @@ FetchContent_Declare(
   GIT_TAG        v3.0.1 # or a later release
   )
 
-FetchContent_MakeAvailable(Catch2)
+FetchContent_MakeAvailable(Catch2 spdlog)
 
 add_library(core "libs/core/db.cc")
 target_include_directories(core PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm_tree/")
 target_compile_options(core PRIVATE -g)
 
-add_library(lsm_tree "libs/lsm_tree/cbf.cc" "libs/lsm_tree/lsm.cc" "libs/lsm_tree/sst.cc" "libs/lsm_tree/segment.cc")
+add_library(lsm_tree "libs/lsm_tree/cbf.h" "libs/lsm_tree/lsm.cc" "libs/lsm_tree/sst.cc" "libs/lsm_tree/segment.cc")
 target_include_directories(lsm_tree PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm_tree/" "${CMAKE_CURRENT_SOURCE_DIR}/libs/util/")
 target_compile_options(lsm_tree PRIVATE -g)
 
@@ -37,6 +39,18 @@ add_executable(snail-test "test/test.cc")
 target_include_directories(snail-test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm_tree/" "${CMAKE_CURRENT_SOURCE_DIR}/libs/util")
 target_link_libraries(snail-test PRIVATE core lsm_tree Catch2::Catch2WithMain)
 target_compile_options(snail-test PRIVATE -g)
+
+#Get colored output back after switch to ninja
+#Taken from: https://medium.com/@alasher/colored-c-compiler-output-with-ninja-clang-gcc-10bfe7f2b949
+option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
+
+if (${FORCE_COLORED_OUTPUT})
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options (-fdiagnostics-color=always)
+  elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    add_compile_options (-fcolor-diagnostics)
+  endif ()
+endif ()
 
 #Auto run tests. Taken from: https://stackoverflow.com/a/32902353
 add_custom_command(

@@ -21,11 +21,10 @@ public:
   bool compact();
 
   bool write(std::map<std::string, std::string> mem_table);
-  std::optional<std::string> get(std::string key);
+  std::optional<std::string> get(std::string key) const;
 
 private:
-  //try adding keys to sparse index randomly for now
-  std::fstream table_file_;
+  std::fstream table_file_; //One file per SST
   std::vector<Segment*> segments_;
 
 };

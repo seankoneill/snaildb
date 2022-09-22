@@ -20,11 +20,10 @@ public:
   std::optional<std::string> get(std::string key);
 
 private:
-  //try adding keys to sparse index randomly for now
   size_t first_record_, last_record_;
   std::map<std::string, size_t> sparse_index_;
-  CountingBloomFilter<uint16_t>* filter_;
-  std::fstream& table_file_;
+  CountingBloomFilter<uint16_t> filter_{100,100};
+  std::fstream& table_file_; //Segments only refer to existing table file
   const size_t INDEX_THRESHHOLD_ = 1000; 
 
   std::string findKey(std::string, size_t offset);
