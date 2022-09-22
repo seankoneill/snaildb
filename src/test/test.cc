@@ -23,24 +23,28 @@ std::string gen_random(const int len) {
   return tmp_s;
 };
 
-TEST_CASE("Random string test against std::map") {
-  //clear file before test
-  std::ofstream f;
-  f.open("testDB.db");
-  f.close();
-
+TEST_CASE("Correct returns on fresh database") {
+  std::string dbName = "freshDBTest.db";
   snaildb::LsmTree engine;
-  engine.open("testDB.db");
+  SECTION("Init new db") {
+    std::ofstream f;
+    f.open(dbName);
+    f.close();
+
+    engine.open(dbName);
+  }
 
   std::map<std::string, std::string> testMap;
   std::vector<std::string> testKeys;
   std::vector<std::string> testVals;
-  for (int i = 0; i < 10000; ++i) {
-    testKeys.push_back(gen_random(20));
-    testVals.push_back(gen_random(100));
+  SECTION("Adding random pairs") {
+    for (int i = 0; i < 10000; ++i) {
+      testKeys.push_back(gen_random(rand()));
+      testVals.push_back(gen_random(rand()));
 
-    engine.put(testKeys[i],testVals[i]);
-    testMap[testKeys[i]] = testVals[i];
+      engine.put(testKeys[i],testVals[i]);
+      testMap[testKeys[i]] = testVals[i];
+    }
   }
 
   for (auto e: testKeys) {
@@ -48,7 +52,7 @@ TEST_CASE("Random string test against std::map") {
   }
 }
 
-TEST_CASE("Open existing database") {
+TEST_CASE("Correct returns on existing database") {
   //clear file before test
   std::ofstream f;
   f.open("testDB.db");
@@ -75,5 +79,6 @@ TEST_CASE("Open existing database") {
     REQUIRE(engine.get(e).value() == testMap[e]);
   }
 }
+
 TEST_CASE("Recover database from log after crash") {}
 TEST_CASE("Test integrity after compaction") {}

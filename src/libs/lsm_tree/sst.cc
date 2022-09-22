@@ -15,6 +15,8 @@ namespace snaildb {
       spdlog::error("failed to open SST");
       return false;
     }
+    //
+
     return true;
   }
 
