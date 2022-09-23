@@ -16,7 +16,7 @@ public:
   Segment(std::fstream& tf);
   ~Segment();
 
-  bool write(std::map<std::string,std::string> mem_table);
+  void write(std::map<std::string,std::string> mem_table);
   std::optional<std::string> get(std::string key);
 
 private:

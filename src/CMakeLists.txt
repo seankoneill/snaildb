@@ -40,18 +40,6 @@ target_include_directories(snail-test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/
 target_link_libraries(snail-test PRIVATE core lsm_tree Catch2::Catch2WithMain)
 target_compile_options(snail-test PRIVATE -g)
 
-#Get colored output back after switch to ninja
-#Taken from: https://medium.com/@alasher/colored-c-compiler-output-with-ninja-clang-gcc-10bfe7f2b949
-option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
-
-if (${FORCE_COLORED_OUTPUT})
-  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    add_compile_options (-fdiagnostics-color=always)
-  elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    add_compile_options (-fcolor-diagnostics)
-  endif ()
-endif ()
-
 #Auto run tests. Taken from: https://stackoverflow.com/a/32902353
 add_custom_command(
   TARGET snail-test

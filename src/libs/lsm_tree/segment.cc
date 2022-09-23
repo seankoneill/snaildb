@@ -12,12 +12,9 @@ Segment::Segment(std::fstream& tf) :
 Segment::~Segment() {}
 
 //write a whole table to a new segment
-bool Segment::write(std::map<std::string,std::string> mem_table) {
-  //start a transaction?
-
+void Segment::write(std::map<std::string,std::string> mem_table) {
   if (table_file_.bad()) {
-    spdlog::error("Something went wrong in Segment::write");
-    return false;
+    throw std::invalid_argument("Failed to write segment. Bad table file");
   }
 
   size_t bytes_written = 0; //bytes written since last offset was added to the index
@@ -50,8 +47,6 @@ bool Segment::write(std::map<std::string,std::string> mem_table) {
       bytes_written = 0;
     }
   }
-
-  return true;
 }
 
 std::optional<std::string> Segment::get(std::string key) {

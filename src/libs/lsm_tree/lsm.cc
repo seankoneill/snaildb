@@ -4,7 +4,7 @@
 
 namespace snaildb {
 
-bool LsmTree::open(std::string name) {
+void LsmTree::open(std::string name) {
   std::stringstream ss;
 
   ss << dbName << ".db";
@@ -14,12 +14,10 @@ bool LsmTree::open(std::string name) {
 
   ss << dbName << ".wlog";
   wal_.open(ss.str());
-  return true;
 }
 
-bool LsmTree::close() {
+void LsmTree::close() {
   wal_.close();
-  return true;
 }
 
 std::optional<std::string> LsmTree::get(std::string key) const {
@@ -31,29 +29,23 @@ std::optional<std::string> LsmTree::get(std::string key) const {
   return sst_.get(key);
 }
 
-bool LsmTree::put(std::string key, std::string value) {
+void LsmTree::put(std::string key, std::string value) {
   writeToLog(key,value);
   mem_table_[key] = value;
 
   if (mem_table_.size() > MEM_TABLE_THRESHOLD_) {
-    if (sst_.write(mem_table_)) {
-      //memtable is written to new segment successfully
-      //clear table and log
-      mem_table_.clear();
-      wal_.open(dbName);
-    }
+    sst_.write(mem_table_);
+    mem_table_.clear();
+    wal_.open(dbName);
   }
-
-  return true;
 }
 
-bool LsmTree::writeToLog(std::string key, std::string value) {
+void LsmTree::writeToLog(std::string key, std::string value) {
   wal_.write(key.c_str(), key.size());
   wal_.write(":",1);
   wal_.write(value.c_str(), value.size());
   wal_.write("\n", 1);
   wal_.flush();
-  return true;
 }
 
 bool LsmTree::remove(std::string key) {

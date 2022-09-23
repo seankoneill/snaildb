@@ -13,8 +13,8 @@ namespace snaildb {
 class DB {
 public:
   std::optional<std::string> get(std::string key);
-  bool put(std::string key, std::string value);
-  bool remove(std::string key);
+  void put(std::string key, std::string value);
+  bool remove(std::string key); //true if key existed
 
 private:
   LsmTree storage_engine_;

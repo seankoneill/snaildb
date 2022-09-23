@@ -17,15 +17,16 @@ class SST {
 public:
   ~SST();
 
-  bool open(std::string dbName);
-  bool compact();
+  void open(std::string dbName);
 
-  bool write(std::map<std::string, std::string> mem_table);
+  void write(std::map<std::string, std::string> mem_table);
   std::optional<std::string> get(std::string key) const;
 
 private:
   std::fstream table_file_; //One file per SST
   std::vector<Segment*> segments_;
+
+  void compact();
 
 };
 

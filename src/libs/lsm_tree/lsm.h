@@ -15,11 +15,11 @@ namespace snaildb {
 class LsmTree {
 
 public:
-  bool open(std::string);
-  bool close();
+  void open(std::string);
+  void close();
 
   std::optional<std::string> get(std::string) const;
-  bool put(std::string, std::string);
+  void put(std::string, std::string);
   bool remove(std::string);
 
 private:
@@ -30,9 +30,8 @@ private:
 
   const size_t MEM_TABLE_THRESHOLD_ = 1000;
 
-  bool writeToLog(std::string key, std::string value);
+  void writeToLog(std::string key, std::string value);
   std::map<std::string,std::string> readFromLog(std::fstream& logFile);
-
 };
 
 } //namespace snaildb
