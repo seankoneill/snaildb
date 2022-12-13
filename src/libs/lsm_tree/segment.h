@@ -19,7 +19,7 @@ class Segment {
 public:
   Segment() = delete;
   Segment(std::fstream&,std::map<std::string,std::string>&);
-  Segment(std::fstream&,size_t offset);
+  Segment(std::fstream&,size_t& offset);
 
   std::optional<std::string> findKey(std::string) const;
 
@@ -35,7 +35,7 @@ private:
   CountingBloomFilter<uint16_t> filter_{100,100};
 
   void write(std::map<std::string,std::string>& mem_table);
-  void read(size_t offset);
+  void readFromFile(size_t& offset);
   std::pair<std::string,std::string> readRecord(size_t) const;
 };
 

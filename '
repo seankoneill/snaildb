@@ -54,7 +54,7 @@ TEST_CASE("Correct returns on fresh database") {
 }
 
 TEST_CASE("Correct returns on existing database") {
-  spdlog::set_level(spdlog::level::debug);
+  spdlog::set_level(spdlog::level::info);
   std::string db_name = "existingDBTest";
   std::string db_path = std::filesystem::current_path().string();
 

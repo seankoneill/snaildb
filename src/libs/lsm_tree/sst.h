@@ -25,6 +25,7 @@ public:
   ~SST();
 
   void open(std::string db_name);
+  void close();
 
   void write(std::map<std::string, std::string> mem_table);
   std::optional<std::string> get(std::string key) const;

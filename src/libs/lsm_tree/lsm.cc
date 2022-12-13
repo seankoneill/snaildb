@@ -14,6 +14,7 @@ void LsmTree::open(std::filesystem::path path,std::string db_name) {
 void LsmTree::close() {
   flush();
   wal_.close();
+  sst_.close();
 }
 
 std::optional<std::string> LsmTree::get(std::string key) const {
