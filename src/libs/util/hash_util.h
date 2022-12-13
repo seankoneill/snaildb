@@ -3,7 +3,7 @@
 
 namespace snaildb {
 
-struct HashUtil {
+namespace HashUtil {
 
   //-----------------------------------------------------------------------------
   // MurmurHash2, by Austin Appleby

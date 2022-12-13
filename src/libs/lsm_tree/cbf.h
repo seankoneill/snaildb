@@ -48,7 +48,7 @@ CountingBloomFilter<T>::CountingBloomFilter(unsigned int rows, unsigned int colu
 
 template <typename T>
 CountingBloomFilter<T>::~CountingBloomFilter() {
-  delete array;
+  delete [] array;
 }
 
 template <typename T>
