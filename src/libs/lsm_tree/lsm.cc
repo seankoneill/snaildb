@@ -8,12 +8,12 @@ namespace snaildb {
 void LsmTree::open(std::filesystem::path path,std::string db_name) {
   spdlog::debug("Opening LsmTree at path: {}/{}",path.string(),db_name);
   sst_.open(path.string() + "/" + db_name + ".db");
-  wal_.open(path.string() + "/" + db_name + ".wal");
+  wal_file_.open(path.string() + "/" + db_name + ".wal");
 }
 
 void LsmTree::close() {
   flush();
-  wal_.close();
+  wal_file_.close();
   sst_.close();
 }
 
@@ -29,7 +29,7 @@ std::optional<std::string> LsmTree::get(std::string key) const {
 void LsmTree::flush() {
   sst_.write(mem_table_);
   mem_table_.clear();
-  wal_.open(db_path_.string() + "/" + db_name_ + ".wal");
+  wal_file_.open(db_path_.string() + "/" + db_name_ + ".wal");
 }
 
 void LsmTree::put(std::string key, std::string value) {
@@ -39,7 +39,7 @@ void LsmTree::put(std::string key, std::string value) {
 }
 
 void LsmTree::writeToLog(std::string op, std::string key, std::string value) {
-  wal_ << op << key << value << std::endl;
+  wal_file_ << op << key << value << std::endl;
 }
 
 bool LsmTree::remove(std::string key) {

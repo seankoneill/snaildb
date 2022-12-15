@@ -19,17 +19,24 @@ void SST::close() {
 
 void SST::readFromFile() {
   segments_.clear();
+
   size_t read_offset = 0;
+  table_file_.seekg(std::ios::end);
+  size_t end_offset = table_file_.tellg();
+
   while ((!table_file_.eof()) && table_file_.good()) {
-    segments_.push_back(std::make_unique<Segment>(table_file_,read_offset));
+    std::unique_ptr<Segment> s = std::make_unique<Segment>(table_file_);
+    s->readFromFile(read_offset);
+    segments_.push_back(std::move(s));
   }
+
   table_file_.clear();
 }
 
 void SST::open(std::string file_path) {
   table_file_.open(file_path, std::ios::in | std::ios::out | std::ios::app);
   if (!table_file_.good()) {
-    throw std::runtime_error(fmt::format("Couldn't open db file {}", file_path));
+    throw std::runtime_error(fmt::format("Couldn't open db file. State: {}", table_file_.rdstate()));
     return;
   }
 
@@ -41,7 +48,9 @@ void SST::open(std::string file_path) {
 }
 
 void SST::write(std::map<std::string, std::string> mem_table) {
-  segments_.push_back(std::make_unique<Segment>(table_file_,mem_table));
+  std::unique_ptr<Segment> s = std::make_unique<Segment>(table_file_);
+  s->write(mem_table);
+  segments_.push_back(std::move(s));
 }
 
 void SST::compact() {
@@ -52,13 +61,17 @@ void SST::compact() {
 std::optional<std::string> SST::get(std::string key) const {
   spdlog::debug("searching {} segments_ for: {}",segments_.size(),key);
 
-  for(auto&& e = segments_.rbegin(); e != segments_.rend(); ++e) {
-    int i = 1;
+  int i = 1;
+  for(auto e = segments_.rbegin(); e != segments_.rend(); ++e) {
+
+    spdlog::debug("Searching segment {} for: {}",i,key);
+
     std::optional<std::string> val = e->get()->findKey(key);
     if (val.has_value()) {
-      spdlog::debug("found {} in segment no. {} (starts from back)",key,++i);
+      spdlog::debug("found {} in segment no. {}.",key,i);
       return val.value();
     }
+    ++i;
   }
   
   return {};

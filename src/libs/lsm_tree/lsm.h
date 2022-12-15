@@ -36,14 +36,15 @@ public:
   void flush();
 
 private:
-  std::map<std::string,std::string> mem_table_;
-  std::fstream wal_;
+  std::fstream wal_file_;
+  std::fstream table_file_;
   std::string db_name_;
   std::filesystem::path db_path_;
 
+  std::map<std::string,std::string> mem_table_;
   SST sst_;
 
-  const size_t MEM_TABLE_THRESHOLD_ = 1000;
+  const size_t MEM_TABLE_THRESHOLD_ = 5;
 
   void writeToLog(std::string operation, std::string key, std::string value);
   std::map<std::string,std::string> readFromLog(std::fstream&);

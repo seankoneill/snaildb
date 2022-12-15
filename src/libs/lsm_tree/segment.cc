@@ -9,27 +9,13 @@ namespace snaildb {
 Segment::Segment(std::fstream& tf) : 
   table_file_(tf) {}
 
-Segment::Segment(std::fstream& tf, std::map<std::string,std::string>& mt) : 
-  Segment(tf) 
-{
-  write(mt);
-}
-
-Segment::Segment(std::fstream& tf, size_t& offset):
-  Segment(tf) 
-{
-  readFromFile(offset);
-}
-
 void Segment::readFromFile(size_t& offset) {
   if (!table_file_.good()) {
-    spdlog::debug("Segment::read failed at file offset: {}",offset);
     throw std::runtime_error("Failed to read segment. Bad table file");
   }
 
   table_file_.seekg(offset);
   if (!table_file_.good()) {
-    spdlog::debug("Segment::read failed at file offset: {}.",offset);
     throw std::runtime_error("Failed to read segment. Bad file offset.");
   }
 
@@ -37,7 +23,6 @@ void Segment::readFromFile(size_t& offset) {
   table_file_ >> magic_bytes;
 
   if (magic_bytes != "SS") {
-    spdlog::debug("Segment::read failed at file offset: {}. Bytes found: {}",offset,table_file_.tellg());
     throw std::runtime_error("Failed to read segment. No segment beginning at offset.");
   }
 
@@ -47,12 +32,13 @@ void Segment::readFromFile(size_t& offset) {
   std::string key;
   std::string value;
 
-  while (!table_file_.eof() && key != "SS") {
+  while (true) {
+
     table_file_ >> key;
     table_file_ >> value;
+    if (table_file_.eof() || key == "SS") break;
 
     filter_.add(key.c_str(),key.size());
-    spdlog::debug("Segment::read. Added pair {}:{} to filter.",key,value);
 
     if (bytes_read > INDEX_THRESHHOLD_ || total_bytes_read < INDEX_THRESHHOLD_) {
       sparse_index_[key] = offset + total_bytes_read;
@@ -63,6 +49,7 @@ void Segment::readFromFile(size_t& offset) {
     total_bytes_read += 2 + key.size() + value.size();
   }
   this->end_offset_ = offset + total_bytes_read;
+  offset = end_offset_;
 }
 
 //write a whole table to a new segment
@@ -71,22 +58,21 @@ void Segment::write(std::map<std::string,std::string>& mem_table) {
     throw std::invalid_argument("Failed to write segment. Bad table file");
   }
 
-  table_file_.seekp(std::ios::end);
+  table_file_.seekp(0,std::ios_base::end);
   start_offset_ = table_file_.tellp();
-  spdlog::debug("Writing new segment starting at byte: {} in table file", table_file_.tellp());
 
-  table_file_ << "SS" << "\n";
+  spdlog::debug("Writing new segment starting at byte: {} in table file.", table_file_.tellp());
+
+  table_file_ << "SS\n";
 
   size_t bytes_written = 3; //bytes written since last offset was added to the index
   size_t total_bytes_written = 3; 
-  for (auto& e : mem_table) {
-
-    spdlog::debug("Adding entry to table file {}:{} at byte {}", e.first,e.second,table_file_.tellp());
-
+  for (auto e : mem_table) {
     if (bytes_written == 0) {
       sparse_index_[e.first] = total_bytes_written;
     }
 
+    spdlog::debug("Writing pair: {},{} in table file.", e.first,e.second);
     table_file_ << e.first << "\n";
     table_file_ << e.second << "\n";
 
@@ -100,6 +86,7 @@ void Segment::write(std::map<std::string,std::string>& mem_table) {
     }
   }
   end_offset_ = start_offset_ + total_bytes_written;
+  spdlog::debug("Wrote new segment starting at bytes: {},{} in table file.", start_offset_, end_offset_);
 }
 
 std::optional<std::string> Segment::findKey(std::string key) const {
@@ -123,11 +110,11 @@ std::optional<std::string> Segment::findKey(std::string key) const {
     starting_offset = (--next_record)->second;
   }
 
-  spdlog::debug("Searching for {} in segment {}:{}",key,starting_offset,upper_bound);
+  spdlog::debug("Searching for {} between bytes: {},{}",key,starting_offset,upper_bound);
 
   table_file_.seekg(starting_offset);
   while (starting_offset <= upper_bound && !table_file_.eof()) {
-    std::pair<std::string,std::string> r = readRecord(starting_offset);
+    std::pair<std::string,std::string> r = readRecord(starting_offset + 2);
     if (r.first == key) {
       return { r.second };
     }
