@@ -112,7 +112,6 @@ std::optional<std::string> Segment::findKey(std::string key) const {
 
   spdlog::debug("Searching for {} between bytes: {},{}",key,starting_offset,upper_bound);
 
-  table_file_.seekg(starting_offset);
   while (starting_offset <= upper_bound && !table_file_.eof()) {
     std::pair<std::string,std::string> r = readRecord(starting_offset + 2);
     if (r.first == key) {

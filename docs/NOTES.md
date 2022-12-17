@@ -4,13 +4,12 @@
 
 ## TODO:
 #### Now:
-- Add tests
-- Read in DB from file
-- Recover DB from log
-- Decide on error handling routines
+- Add and refactor tests
+- Switch to binary read / write
 
-#### Later:
-- Doxygen
+- Recover DB from log
+- Do compaction
+- Do compaction automatically
 
 # Diagrams
 ### ClassDiagram:

@@ -29,7 +29,6 @@ private:
   std::fstream& table_file_; //Segments only refer to existing table file
   const size_t INDEX_THRESHHOLD_ = 1000; // How many bytes per index entry
 
-
   std::map<std::string, size_t> sparse_index_;
   CountingBloomFilter<uint16_t> filter_{100,100};
 
