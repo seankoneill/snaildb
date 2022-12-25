@@ -24,10 +24,14 @@ public:
 
   std::optional<std::string> findKey(std::string) const;
 
+  size_t getStartOffset() { return start_offset_; }
+  size_t getEndOffset() { return end_offset_; }
+  void setIndexThreshold(size_t t) { INDEX_THRESHHOLD_ = t; }
+
 private:
   size_t start_offset_, end_offset_;
   std::fstream& table_file_; //Segments only refer to existing table file
-  const size_t INDEX_THRESHHOLD_ = 1000; // How many bytes per index entry
+  size_t INDEX_THRESHHOLD_ = 10; // How many bytes per index entry
 
   std::map<std::string, size_t> sparse_index_;
   CountingBloomFilter<uint16_t> filter_{100,100};

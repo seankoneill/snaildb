@@ -6,31 +6,10 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "../libs/core/db.h"
-
-std::string random_string( size_t length )
-{
-  auto randchar = []() -> char
-    {
-      const char charset[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
-      const size_t max_index = (sizeof(charset) - 1);
-      std::random_device rd;  //Will be used to obtain a seed for the random number engine
-      std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-      std::uniform_int_distribution<> distrib(0, max_index - 1);
-      //int r = rand();                      // SOMEHOW KEPT GIVING SAME SEQUENCE????
-      //std::cout << r << std::endl;
-      //return charset[ r % max_index ];
-      return charset[ distrib(gen) ];
-    };
-  std::string str(length,0);
-  std::generate_n( str.begin(), length, randchar );
-  return str;
-}
+#include "test_util.h"
 
 TEST_CASE("Correct returns on existing database") {
-  spdlog::set_level(spdlog::level::debug);
+  //spdlog::set_level(spdlog::level::debug);
   std::string db_name = "existingDBTest";
   std::string db_path = std::filesystem::current_path().string();
 
@@ -43,8 +22,8 @@ TEST_CASE("Correct returns on existing database") {
   std::vector<std::string> test_keys;
   std::vector<std::string> test_vals;
   for (int i = 0; i < 1000; ++i) {
-    std::string k = random_string(10);
-    std::string v = random_string(10);
+    std::string k = snaildb::TestUtil::random_string(10);
+    std::string v = snaildb::TestUtil::random_string(10);
     test_keys.push_back(k);
     test_vals.push_back(v);
 
@@ -62,7 +41,7 @@ TEST_CASE("Correct returns on existing database") {
 }
 
 TEST_CASE("Correct returns on fresh database") {
-  spdlog::set_level(spdlog::level::debug);
+  //spdlog::set_level(spdlog::level::debug);
   std::string db_name = "freshDBTest";
   std::string db_path = std::filesystem::current_path().string();
 
@@ -75,8 +54,8 @@ TEST_CASE("Correct returns on fresh database") {
   std::vector<std::string> test_keys;
   std::vector<std::string> test_vals;
   for (int i = 0; i < 500; ++i) {
-    test_keys.push_back(random_string(5));
-    test_vals.push_back(random_string(10));
+    test_keys.push_back(snaildb::TestUtil::random_string(5));
+    test_vals.push_back(snaildb::TestUtil::random_string(10));
 
     engine.put(test_keys[i],test_vals[i]);
     test_map[test_keys[i]] = test_vals[i];

@@ -36,7 +36,7 @@ target_include_directories(snaildb PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm
 target_link_libraries(snaildb PRIVATE core lsm_tree spdlog::spdlog)
 target_compile_options(snaildb PRIVATE -g)
 
-add_executable(snail-test "test/behaviour_test.cc")
+add_executable(snail-test "test/behaviour_test.cc" "test/segment_test.cc" "test/test_util.cc")
 target_include_directories(snail-test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm_tree/" "${CMAKE_CURRENT_SOURCE_DIR}/libs/util")
 target_link_libraries(snail-test PRIVATE core lsm_tree Catch2::Catch2WithMain)
 target_compile_options(snail-test PRIVATE -g)
