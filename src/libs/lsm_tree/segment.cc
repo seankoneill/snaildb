@@ -59,14 +59,14 @@ void Segment::write(std::map<std::string,std::string>& mem_table) {
   }
 
   table_file_.seekp(0,std::ios_base::end);
-  start_offset_ = table_file_.tellp();
 
   spdlog::debug("Writing new segment starting at byte: {} in table file.", table_file_.tellp());
 
   table_file_ << "SS\n";
+  start_offset_ = table_file_.tellp();
 
-  size_t bytes_written = 3; //bytes written since last offset was added to the index
-  size_t total_bytes_written = 3; 
+  size_t bytes_written = 0; //bytes written since last offset was added to the index
+  size_t total_bytes_written = 0; 
   for (auto e : mem_table) {
     if (bytes_written == 0) {
       sparse_index_[e.first] = total_bytes_written;

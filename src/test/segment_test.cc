@@ -37,7 +37,7 @@ TEST_CASE("Segment write full index") {
 
   s.write(test_map);
 
-  REQUIRE(s.getStartOffset() == 0);
+  REQUIRE(s.getStartOffset() == 3);
   REQUIRE(s.getEndOffset() == 3 + bytes_written);
 
   for (auto e: test_keys) {
