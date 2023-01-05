@@ -25,8 +25,8 @@ void SST::readFromFile() {
   size_t end_offset = table_file_.tellg();
 
   while ((!table_file_.eof()) && table_file_.good()) {
-    std::unique_ptr<Segment> s = std::make_unique<Segment>(table_file_);
-    s->readFromFile(read_offset);
+    std::unique_ptr<Segment> s = std::make_unique<Segment>();
+    //s->readFromFile();
     segments_.push_back(std::move(s));
   }
 
@@ -48,9 +48,9 @@ void SST::open(std::string file_path) {
 }
 
 void SST::write(std::map<std::string, std::string> mem_table) {
-  std::unique_ptr<Segment> s = std::make_unique<Segment>(table_file_);
-  s->write(mem_table);
-  segments_.push_back(std::move(s));
+  //std::unique_ptr<Segment> s = std::make_unique<Segment>(table_file_);
+  //s->writeTo(mem_table);
+  //segments_.push_back(std::move(s));
 }
 
 void SST::compact() {

@@ -27,7 +27,7 @@ add_library(core "libs/core/db.cc")
 target_include_directories(core PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm_tree/")
 target_compile_options(core PRIVATE -g)
 
-add_library(lsm_tree "libs/lsm_tree/cbf.h" "libs/lsm_tree/lsm.cc" "libs/lsm_tree/sst.cc" "libs/lsm_tree/segment.cc" "libs/lsm_tree/record.h")
+add_library(lsm_tree "libs/lsm_tree/cbf.h" "libs/lsm_tree/lsm.cc" "libs/lsm_tree/sst.cc" "libs/lsm_tree/segment.cc")
 target_include_directories(lsm_tree PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lsm_tree/" "${CMAKE_CURRENT_SOURCE_DIR}/libs/util/")
 target_compile_options(lsm_tree PRIVATE -g)
 
