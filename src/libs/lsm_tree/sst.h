@@ -15,26 +15,28 @@ namespace snaildb {
 
 /* 
 Sorted string table structure backed by
-file of segments
+segment files
 
-Segments are flushed memtables
+Manages seg files / directory and performes
+compaction
 */
 
 class SST {
 public:
   ~SST();
 
-  void open(std::string db_name);
+  void open(std::filesystem::path dir);
   void close();
 
   void write(std::map<std::string, std::string> mem_table);
   std::optional<std::string> get(std::string key) const;
 
 private:
-  std::fstream table_file_; //One file per SST
-  std::string db_name_;
+  uint32_t next_id_;
+  std::filesystem::path db_directory_;
   std::vector<std::unique_ptr<Segment>> segments_;
 
+  std::filesystem::path nextSegmentPath();
   void readFromFile();
   void compact();
 };

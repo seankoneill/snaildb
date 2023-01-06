@@ -10,47 +10,46 @@
 namespace snaildb {
 
 SST::~SST() {
-  table_file_.close();
 }
 
 void SST::close() {
-  table_file_.close();
 }
 
 void SST::readFromFile() {
-  segments_.clear();
-
-  size_t read_offset = 0;
-  table_file_.seekg(std::ios::end);
-  size_t end_offset = table_file_.tellg();
-
-  while ((!table_file_.eof()) && table_file_.good()) {
-    std::unique_ptr<Segment> s = std::make_unique<Segment>();
-    //s->readFromFile();
-    segments_.push_back(std::move(s));
-  }
-
-  table_file_.clear();
 }
 
-void SST::open(std::string file_path) {
-  table_file_.open(file_path, std::ios::in | std::ios::out | std::ios::app);
-  if (!table_file_.good()) {
-    throw std::runtime_error(fmt::format("Couldn't open db file. State: {}", table_file_.rdstate()));
-    return;
+/*
+Reads a SST in from collection of segment files 
+in a directory. Currently assumes that all files in 
+the directory ending in .seg are segment files.
+*/
+void SST::open(std::filesystem::path dir_path) {
+  if (std::filesystem::exists(dir_path) && !std::filesystem::is_directory(dir_path)) {
+    throw std::runtime_error("Path for SST must be a directory or not already exist.");
   }
 
-  if (!std::filesystem::is_empty(file_path)) {
-    readFromFile(); 
+  if (!std::filesystem::exists(dir_path)) {
+    std::filesystem::create_directory(dir_path);
   }
 
-  this->db_name_ = file_path;
+  for (std::filesystem::directory_entry de : std::filesystem::directory_iterator(dir_path)) {
+    if (de.path().extension().string() != ".seg") {
+      continue;
+    }
+    std::unique_ptr<Segment> s = std::make_unique<Segment>();
+    s->readFromFile(de);
+    segments_.push_back(std::move(s));
+  }
+}
+
+std::filesystem::path SST::nextSegmentPath() {
+  return db_directory_.string() + std::to_string((next_id_++) % 32) + ".seg";
 }
 
 void SST::write(std::map<std::string, std::string> mem_table) {
-  //std::unique_ptr<Segment> s = std::make_unique<Segment>(table_file_);
-  //s->writeTo(mem_table);
-  //segments_.push_back(std::move(s));
+  std::unique_ptr<Segment> s = std::make_unique<Segment>();
+  s->writeTo(nextSegmentPath(),mem_table);
+  segments_.push_back(std::move(s));
 }
 
 void SST::compact() {

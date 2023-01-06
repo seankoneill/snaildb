@@ -8,7 +8,35 @@
 #include "../libs/core/db.h"
 #include "test_util.h"
 
-TEST_CASE("Segment new") {
+TEST_CASE("Segment new large data") {
+  //spdlog::set_level(spdlog::level::debug);
+  std::string file_name = "segTestDB";
+  std::string file_path = std::filesystem::current_path().string();
+  std::string full_path = file_path + "/" + file_name + ".db";
+
+  std::filesystem::remove(full_path);
+  std::fstream f;
+
+  std::map<std::string, std::string> test_map;
+  std::vector<std::string> test_keys;
+  std::vector<std::string> test_vals;
+
+  for (int i = 0; i < 10000; ++i) {
+    test_keys.push_back(snaildb::TestUtil::random_string(20));
+    test_vals.push_back(snaildb::TestUtil::random_string(50));
+
+    test_map[test_keys[i]] = test_vals[i];
+  }
+
+  snaildb::Segment s(1000,100,100);
+  s.writeTo(full_path,test_map);
+
+  for (auto e: test_keys) {
+    REQUIRE(s.findKey(e).value() == test_map[e]);
+  }
+}
+
+TEST_CASE("Segment new debug") {
   spdlog::set_level(spdlog::level::debug);
   std::string file_name = "segTestDB";
   std::string file_path = std::filesystem::current_path().string();
@@ -28,7 +56,7 @@ TEST_CASE("Segment new") {
     test_map[test_keys[i]] = test_vals[i];
   }
 
-  snaildb::Segment s;
+  snaildb::Segment s(1,100,100);
   s.writeTo(full_path,test_map);
 
   for (auto e: test_keys) {
@@ -36,7 +64,7 @@ TEST_CASE("Segment new") {
   }
 }
 
-TEST_CASE("Segment existing") {
+TEST_CASE("Segment existing debug") {
   spdlog::set_level(spdlog::level::debug);
   std::string file_name = "segTestDB";
   std::string file_path = std::filesystem::current_path().string();
@@ -46,7 +74,7 @@ TEST_CASE("Segment existing") {
   std::fstream f;
   f.open(full_path, std::ios::in | std::ios::out | std::ios::app);
 
-  snaildb::Segment s;
+  snaildb::Segment s(10,100,100);
 
   std::map<std::string, std::string> test_map;
   std::vector<std::string> test_keys;
@@ -63,6 +91,7 @@ TEST_CASE("Segment existing") {
   }
 
   s.writeTo(full_path,test_map);
+  s.readFromFile(full_path);
 
   for (auto e: test_map) {
     REQUIRE(s.findKey(e.first).value() == e.second);

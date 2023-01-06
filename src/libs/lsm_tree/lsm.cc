@@ -7,7 +7,7 @@ namespace snaildb {
 
 void LsmTree::open(std::filesystem::path path,std::string db_name) {
   spdlog::debug("Opening LsmTree at path: {}/{}",path.string(),db_name);
-  sst_.open(path.string() + "/" + db_name + ".db");
+  sst_.open(path.string());
   wal_file_.open(path.string() + "/" + db_name + ".wal");
 }
 

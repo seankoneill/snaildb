@@ -6,7 +6,14 @@
 
 namespace snaildb {
 
+Segment::Segment(size_t index_threshold, size_t hashes, size_t width): 
+  filter_(hashes,width),
+  INDEX_THRESHHOLD_(index_threshold) {}
+
 void Segment::readFromFile(std::filesystem::path p) {
+
+  if (table_file_.is_open()) table_file_.close();
+
   table_file_.open(p,std::ios::binary | std::ios::in);
 
   if (!table_file_.good()) {
@@ -19,25 +26,11 @@ void Segment::readFromFile(std::filesystem::path p) {
 
     size_t read_pos = table_file_.tellg();
 
-    uint8_t key_size;
-    uint8_t val_size;
-
-    table_file_.read(reinterpret_cast<char*>(&key_size),1);
-    table_file_.read(reinterpret_cast<char*>(&val_size),1);
-
-    char key_buf[key_size+1];
-    key_buf[key_size] = '\0';
-    char val_buf[val_size+1];
-    val_buf[val_size] = '\0';
-
-    table_file_.read(key_buf,key_size);
-    table_file_.read(val_buf,val_size);
-
-    std::string key = std::string(key_buf);
-    std::string val = std::string(key_buf);
+    std::pair<std::string,std::string> r = nextRecord();
+    bytes_read += r.first.size() + r.second.size() + 2;
 
     if (bytes_read > INDEX_THRESHHOLD_) {
-      sparse_index_[key] = read_pos;
+      sparse_index_[r.first] = read_pos;
       bytes_read = 0;
     }
   }
@@ -96,8 +89,9 @@ std::optional<std::string> Segment::findKey(std::string key) {
 
   spdlog::debug("Searching for {} between bytes: {},{}",key,starting_offset,upper_bound);
 
+  table_file_.clear();
   table_file_.seekg(starting_offset);
-  while (starting_offset <= upper_bound && !table_file_.eof()) {
+  while (table_file_.tellg() <= upper_bound && !table_file_.eof()) {
 
     std::pair<std::string,std::string> r = nextRecord();
 
