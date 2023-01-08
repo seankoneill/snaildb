@@ -29,6 +29,8 @@ void Segment::readFromFile(std::filesystem::path p) {
     std::pair<std::string,std::string> r = nextRecord();
     bytes_read += r.first.size() + r.second.size() + 2;
 
+    filter_.add(r.first.c_str(),r.first.size());
+
     if (bytes_read > INDEX_THRESHHOLD_) {
       sparse_index_[r.first] = read_pos;
       bytes_read = 0;
@@ -67,9 +69,11 @@ void Segment::writeTo(std::filesystem::path p, std::map<std::string,std::string>
 }
 
 std::optional<std::string> Segment::findKey(std::string key) {
-  if (!filter_.contains(key.c_str(),key.size())) {
-    return {};
-  }
+  // FILTER NOT WORKING SOMETIMES :(
+  //if (!filter_.contains(key.c_str(),key.size())) {
+    //spdlog::debug("Key {} not in filter",key);
+    //return {};
+  //}
 
   auto next_record = sparse_index_.upper_bound(key); //greater or equal record
   size_t starting_offset;

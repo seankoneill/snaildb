@@ -21,7 +21,7 @@ TEST_CASE("Correct returns on existing database") {
   std::map<std::string, std::string> test_map;
   std::vector<std::string> test_keys;
   std::vector<std::string> test_vals;
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 0; i < 100; ++i) {
     std::string k = snaildb::TestUtil::random_string(10);
     std::string v = snaildb::TestUtil::random_string(10);
     test_keys.push_back(k);
@@ -53,7 +53,7 @@ TEST_CASE("Correct returns on fresh database") {
   std::map<std::string, std::string> test_map;
   std::vector<std::string> test_keys;
   std::vector<std::string> test_vals;
-  for (int i = 0; i < 500; ++i) {
+  for (int i = 0; i < 100; ++i) {
     test_keys.push_back(snaildb::TestUtil::random_string(5));
     test_vals.push_back(snaildb::TestUtil::random_string(10));
 

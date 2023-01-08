@@ -12,7 +12,7 @@ TEST_CASE("Segment new large data") {
   //spdlog::set_level(spdlog::level::debug);
   std::string file_name = "segTestDB";
   std::string file_path = std::filesystem::current_path().string();
-  std::string full_path = file_path + "/" + file_name + ".db";
+  std::string full_path = file_path + "/" + file_name + ".seg";
 
   std::filesystem::remove(full_path);
   std::fstream f;
@@ -37,7 +37,7 @@ TEST_CASE("Segment new large data") {
 }
 
 TEST_CASE("Segment new debug") {
-  spdlog::set_level(spdlog::level::debug);
+  //spdlog::set_level(spdlog::level::debug);
   std::string file_name = "segTestDB";
   std::string file_path = std::filesystem::current_path().string();
   std::string full_path = file_path + "/" + file_name + ".db";

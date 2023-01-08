@@ -32,6 +32,9 @@ void SST::open(std::filesystem::path dir_path) {
     std::filesystem::create_directory(dir_path);
   }
 
+  db_directory_ = dir_path;
+  next_id_ = 1;
+
   for (std::filesystem::directory_entry de : std::filesystem::directory_iterator(dir_path)) {
     if (de.path().extension().string() != ".seg") {
       continue;
@@ -43,7 +46,7 @@ void SST::open(std::filesystem::path dir_path) {
 }
 
 std::filesystem::path SST::nextSegmentPath() {
-  return db_directory_.string() + std::to_string((next_id_++) % 32) + ".seg";
+  return db_directory_.string() + std::to_string(next_id_++) + ".seg";
 }
 
 void SST::write(std::map<std::string, std::string> mem_table) {
@@ -60,7 +63,7 @@ void SST::compact() {
 std::optional<std::string> SST::get(std::string key) const {
   spdlog::debug("searching {} segments_ for: {}",segments_.size(),key);
 
-  int i = 1;
+  int i = segments_.size();
   for(auto e = segments_.rbegin(); e != segments_.rend(); ++e) {
 
     spdlog::debug("Searching segment {} for: {}",i,key);
@@ -70,7 +73,7 @@ std::optional<std::string> SST::get(std::string key) const {
       spdlog::debug("found {} in segment no. {}.",key,i);
       return val.value();
     }
-    ++i;
+    --i;
   }
   
   return {};
