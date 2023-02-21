@@ -23,10 +23,7 @@ compaction
 
 class SST {
 public:
-  ~SST();
-
   void open(std::filesystem::path dir);
-  void close();
 
   void write(std::map<std::string, std::string> mem_table);
   std::optional<std::string> get(std::string key) const;
@@ -37,8 +34,7 @@ private:
   std::vector<std::unique_ptr<Segment>> segments_;
 
   std::filesystem::path nextSegmentPath();
-  void readFromFile();
-  void compact();
+  void compact(std::vector<Segment>& );
 };
 
 } //namespace snaildb

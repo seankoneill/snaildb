@@ -9,15 +9,6 @@
 
 namespace snaildb {
 
-SST::~SST() {
-}
-
-void SST::close() {
-}
-
-void SST::readFromFile() {
-}
-
 /*
 Reads a SST in from collection of segment files 
 in a directory. Currently assumes that all files in 
@@ -33,7 +24,6 @@ void SST::open(std::filesystem::path dir_path) {
   }
 
   db_directory_ = dir_path;
-  next_id_ = 1;
 
   for (std::filesystem::directory_entry de : std::filesystem::directory_iterator(dir_path)) {
     if (de.path().extension().string() != ".seg") {
@@ -43,6 +33,8 @@ void SST::open(std::filesystem::path dir_path) {
     s->readFromFile(de);
     segments_.push_back(std::move(s));
   }
+
+  next_id_ = segments_.size() + 1;
 }
 
 std::filesystem::path SST::nextSegmentPath() {
@@ -55,8 +47,9 @@ void SST::write(std::map<std::string, std::string> mem_table) {
   segments_.push_back(std::move(s));
 }
 
-void SST::compact() {
-  for (auto& s: segments_) {
+void SST::compact(std::vector<Segment>& segments) {
+  std::map<std::string, std::string> new_table;
+  for (auto& s: segments) {
   }
 }
 
