@@ -17,14 +17,6 @@ namespace snaildb {
 */
 class Segment {
 
-  class KeyIterator: public std::iterator<
-      std::string,
-      std::string,
-      const std::string *,
-      std::string>{
-
-    };
-
 public:
   Segment(size_t = 10000,size_t = 100,size_t = 100);
   void readFromFile(std::filesystem::path);
